@@ -9,7 +9,7 @@
     body {
       margin-top: 1.0em;
       background-color: #eaf1fa;
-      font-family: "Helvetica,Arial,FreeSans";
+      font: 17px/1.231 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Arial, Helvetica,clean,sans-serif;
       color: #000000;
     }
     #container {
@@ -48,7 +48,7 @@
     <div class="description">
       Convore for Node.js. 
 
-Provides a set of wrappers for the HTTP API of Convore.
+Provides a set of wrappers around their HTTP API 
     </div>
 
     <h2>Install</h2>
@@ -57,9 +57,8 @@ Provides a set of wrappers for the HTTP API of Convore.
 <pre>git clone git://github.com/danielrmz/Convore.js.git
 <br />
 var Convore = require("./Convore.js"); 
-<br />
 var client = new Convore("user","passwd");
-<br /><br />client.Live(function(message) { /* callback */ });</pre></p>
+client.Live(function(message) { /* callback */ });</pre></p>
 <h2>License</h2>
 <p>MIT</p>
 <h2>Authors</h2>
