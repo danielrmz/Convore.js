@@ -9,11 +9,22 @@ var sys = require('sys'),
     path = require('path'),
     http = require('http');
 
+/*
+ * @constructor
+ */
 var Convore = function(username, password) { 
 	this._username = username;
 	this._password = password;
 };
 
+/*
+ * Creates the httpClient and makes the request.
+ *
+ * @param {string} method
+ * @param {string} path
+ * @param {object} body
+ * @param {Function=} callback
+ */
 Convore.prototype._request = function(method, path, body, callback) {
 	if(typeof body == 'function' && !callback) { 
 		callback = body;
@@ -77,10 +88,24 @@ Convore.prototype._request = function(method, path, body, callback) {
 	req.end();
 };
 
+/*
+ * Creates a POST Request
+ *
+ * @param {string} path
+ * @param {string} body
+ * @param {Function=} callback
+ */
 Convore.prototype._post = function(path, body, callback) {
     this._request('POST', path, body, callback);
 };
 
+/*
+ * Creates a GET Request
+ *
+ * @param {string} path
+ * @param {string} body
+ * @param {Function=} callback
+ */
 Convore.prototype._get  = function(path, body, callback) {
     this._request('GET', path, body, callback);
 };
