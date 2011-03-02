@@ -1,3 +1,10 @@
+/*
+ * Convore's API Wrapper.
+ * @author Daniel Ramirez <hello@danielrmz.com>
+ * @license MIT License
+ *
+ * Provides all the functions associated to the wrapper as of March 1st. 2011.
+ */
 var sys = require('sys'),
     path = require('path'),
     http = require('http');
