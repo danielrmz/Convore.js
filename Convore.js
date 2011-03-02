@@ -42,8 +42,8 @@ Convore.prototype._request = function(method, path, body, callback) {
 			var data = "";
 			response.setEncoding("utf8");
 			response.on("data", function(chunk) { data += chunk; });
-			response.on("end", function() { 
-				if(callback) {
+			response.on("end", function() {
+                                if(callback) {
 					try { 
 						body = JSON.parse(data);
 					} catch(e) { 
@@ -51,6 +51,7 @@ Convore.prototype._request = function(method, path, body, callback) {
 					}
 					callback(body);
 				}
+                                
 			});
 		} else if(response.statusCode == 302) {
 			this._request(method, path, body, callback);
@@ -234,6 +235,8 @@ Convore.prototype.Messages_delete = function(message_id, callback) {
 /* Discovery APIs */
 
 /* Live endpoint */
+Convore.prototype._lastMessageId = null;
+
 Convore.prototype.Live = function(callback, cursor) {
 	var url = '/api/live.json';
 	if(cursor && cursor.constructor == String){
@@ -242,21 +245,20 @@ Convore.prototype.Live = function(callback, cursor) {
         var self = this;
 
 	this._get(url, function(body) {
-            
+                
 		for (var id in body.messages) {
                     var message = body.messages[id];
                     if(callback && typeof callback == 'function') {
                         callback(message);
                     }
-
-                    if(message.kind == 'message') {}
-
-                    if(message && message._id) {
-                       self.Live(callback, message._id);
-                    } else {
-                       self.Live(callback);
-                    }
+                    self._lastMessageId = message._id;
 		}
+                
+                if(self._lastMessageId && self._lastMessageId) {
+                    self.Live(callback, self._lastMessageId);
+                } else {
+                    self.Live(callback);
+                }
         });
 };
 
