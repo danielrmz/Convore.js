@@ -34,8 +34,7 @@ Convore.prototype._request = function(method, path, body, callback) {
 	if(method == "POST") {
 		headers["Content-Length"] = body.length;
 	}
-	console.log("doing request, method: "+method + ", path: " + path);
-	console.log(sys.inspect(headers));
+	
 	var req = client.request(method, path, headers);
 	req.on("response", function(response) { 
 		console.log("ResponseCode: " + response.statusCode);
@@ -44,14 +43,12 @@ Convore.prototype._request = function(method, path, body, callback) {
 			response.setEncoding("utf8");
 			response.on("data", function(chunk) { data += chunk; });
 			response.on("end", function() { 
-				console.log("End: " + data);
 				if(callback) {
 					try { 
 						body = JSON.parse(data);
 					} catch(e) { 
 						body = data;
 					}
-					console.log("calling callback");
 					callback(body);
 				}
 			});
@@ -73,12 +70,11 @@ Convore.prototype._request = function(method, path, body, callback) {
 };
 
 Convore.prototype._post = function(path, body, callback) {
-	this._request('POST', path, body, callback);
+    this._request('POST', path, body, callback);
 };
 
 Convore.prototype._get  = function(path, body, callback) {
-	console.log("get: " + path + ", body: " + body + ", cb: " + callback);
-	this._request('GET', path, body, callback);
+    this._request('GET', path, body, callback);
 };
 
 /* Custom Exceptions */
@@ -243,9 +239,12 @@ Convore.prototype.Live = function(callback, cursor) {
 	if(cursor && cursor.constructor == String){
 		url+="?cursor="+cursor;
 	}
+        var self = this;
 
 	this._get(url, function(body) {
-		for (var message in body.messages) {
+            
+		for (var id in body.messages) {
+                    var message = body.messages[id];
                     if(callback && typeof callback == 'function') {
                         callback(message);
                     }
@@ -253,9 +252,9 @@ Convore.prototype.Live = function(callback, cursor) {
                     if(message.kind == 'message') {}
 
                     if(message && message._id) {
-                        this.Live(callback, message._id);
+                       self.Live(callback, message._id);
                     } else {
-                        this.Live(callback);
+                       self.Live(callback);
                     }
 		}
         });
