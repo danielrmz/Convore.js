@@ -71,6 +71,9 @@ Convore.prototype._request = function(method, path, body, callback) {
 				}
                                 
 			});
+                } else if(response.statusCode == 401) { /* Unauthorized */
+                    body = {"error":{"code":401,"message":"Unauthorized"}};
+                    callback(body);
 		} else if(response.statusCode == 302) {
 			this._request(method, path, body, callback);
 		} else {
