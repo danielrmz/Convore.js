@@ -7,7 +7,9 @@
  */
 var sys = require('sys'),
     path = require('path'),
-    http = require('http');
+    http = require('http'),
+    qs   = require('querystring')
+    ;
 
 /*
  * @constructor
@@ -26,40 +28,41 @@ var Convore = function(username, password) {
  * @param {Function=} callback
  */
 Convore.prototype._request = function(method, path, body, callback) {
-	if(typeof body == 'function' && !callback) { 
+	
+        if(typeof body == 'function' && !callback) {
 		callback = body;
 		body = null;
 	}
 
-	var headers = {};
-	var client  = null;
-
-	if(match = path.match(/^(https?):\/\/([^\/]+?)(\/.+)/) ) {
-		console.log("match! [0] => " + match[0] + ", [1] => " + match[1] + ", [2] => " + match[2] + ", [3] => " + match[3]);
-		headers = {"Host": match[2], 
-			   "Content-Type": "application/json", 
-			   "User-Agent": "ConvieNode" };
-		port    = (match[1] == "https")?443:80;
-		client  = http.createClient(port, match[2], port == 443);
-		path    = match[3];
-	} else {
-		headers = {"Authorization":"Basic " + new Buffer(this._username + ":" + this._password).toString("base64"), 
-			   "Host": "convore.com",
-			   "Content-Type":"application/json",
-			   "User-Agent":"ConvieNode"};
-		client  = http.createClient(443, "184.106.83.80"/*"convore.com"*/, true);
-	}
-	if(method == "POST") {
-		headers["Content-Length"] = body.length;
-	}
+        var headers = {"Authorization":"Basic " + new Buffer(this._username + ":" + this._password).toString("base64"),
+                   "Host": "convore.com",
+                   "Content-Type":"application/json",
+                   "User-Agent":"ConvieNode"};
+        var client  = http.createClient(443, "184.106.83.80", true);
 	
+        
+        if(typeof body == 'object' && body) {
+            if(method == "POST") {
+                body = qs.stringify(body);
+            } else if(method == "GET") {
+                path += "?"+qs.stringify(body);
+                body = null;
+            }
+        }
+
+	// Add default base path. 
+        path = "https://convore.com/" + path;
+
+        if(method == "POST")
+            headers["Content-Length"] = (body ? body.length : "0");
+        
 	var req = client.request(method, path, headers);
 	req.on("response", function(response) { 
 		console.log("ResponseCode: " + response.statusCode);
 		if(response.statusCode == 200) {
 			var data = "";
 			response.setEncoding("utf8");
-			response.on("data", function(chunk) { data += chunk; });
+			response.on("data", function(chunk) {  data += chunk; });
 			response.on("end", function() {
                                 if(callback) {
 					try { 
@@ -83,9 +86,14 @@ Convore.prototype._request = function(method, path, body, callback) {
 			process.exit(1);
 		}
 	});
-	
-	if(method == 'POST' && body) {
-		req.write(body);
+	req.on('error', function(err) {
+            console.log(sys.inspect(err));
+  	});
+
+        console.log("body: " + body);
+	if(method == "POST" && body) {
+            console.log(body);
+            req.write(body);
 	}
 
 	req.end();
@@ -268,6 +276,10 @@ Convore.prototype.Messages_delete = function(message_id, callback) {
 };
 
 /* Discovery APIs */
+Convore.prototype.Discovery_GroupSearch = function(query, callback) {
+   this._get('api/groups/discover/search.json', {"q":query}, callback);
+};
+
 
 /* Live endpoint */
 Convore.prototype._lastMessageId = null;
