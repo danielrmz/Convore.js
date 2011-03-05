@@ -133,7 +133,7 @@ Convore.prototype.Account_markRead = function(callback) {
 };
 
 Convore.prototype.Account_verify = function(user, pass, callback){ 
-    (new Convore(user, pass))._get("/api/account/verify.json", callback);
+    (new Convore(user, pass))._get("api/account/verify.json", callback);
 };
 
 Convore.prototype.Account_online = function(callback) { 
@@ -285,7 +285,7 @@ Convore.prototype.Discovery_GroupSearch = function(query, callback) {
 Convore.prototype._lastMessageId = null;
 
 Convore.prototype.Live = function(callback, cursor) {
-	var url = '/api/live.json';
+	var url = 'api/live.json';
 	if(cursor && cursor.constructor == String){
 		url+="?cursor="+cursor;
 	}
